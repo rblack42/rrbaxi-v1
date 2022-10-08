@@ -28,8 +28,8 @@
           end if
           j = (pt2/3.0)*10+1
           ptg(j:j) = '*'
-          write(*,'(1x,i2,5f10.6,2x,a11)')
-     1       i,r(i),u(i),v(i),p(i),pt2,ptg
+          write(*,'(1x,i2,7f10.6,2x,a11)')
+     1       i,r(i),u(i),v(i),p(i),pt2,t,xm,ptg
 20    continue
       return
       end
