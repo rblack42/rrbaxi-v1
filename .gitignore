@@ -1,0 +1,15 @@
+# Mac
+.DS_Store
+
+# Vim
+*~
+*.swp
+
+# Python
+.direnv
+*.py[cod]
+__pycache__
+
+# Fortran
+*.o
+
