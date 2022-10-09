@@ -188,6 +188,7 @@ class AXIsolver:
     #--------------------------------------------------------------------
     def solve(self,i,aa,bb,cc):
         '''Reduce Solution vector to primitive values'''
+        print(aa,bb,cc)
         xk = self.hinf - 0.5*(cc/aa)**2
         phi = 0.8 * xk * aa * aa/(1.4 * bb * bb)
         phm = 1.4/2.4
@@ -245,11 +246,15 @@ class AXIsolver:
                     trrm = 2.0*self.xmu1*etar*vetam - \
                         2.0/3.0*self.xmu1*self.beta*deldvm
                     e1p = self.rho[i]*self.u[i]*r1
+                    print(etaxm,den1,uetam,vetam)
+                    print(deldvm,txxm,sigxrm,trrm)
                     e2p = e1p*self.u[i]+self.p[i]*r1-txxm*r1
                     e3p = e1p*self.v[i]-sigxrm*r1
                     f1p = self.rho[i]*self.v[i]*r1
                     f2p = f1p*self.u[i]-sigxrm*r1
                     f3p = f1p*self.v[i]+self.p[i]*r1-trrm*r1
+                    print(e1p,e2p,e3p)
+                    print(f1p,f2p,f3p)
                 if(i>2):
                     etaxm=etaxpp
                 etaxp = ((self.eta[i+1]-1.0)*self.rbx[1] - \
@@ -290,6 +295,11 @@ class AXIsolver:
                 ep3 = ep3 -self.dxi*etaxm*den1*(e3p-e3m) - \
                     self.dxi*etar*den1*(f3p-f3m)+self.dxi*h3
                 r2 = self.rb[2]+self.eta[i]*(self.rs[2]-self.rb[2])
+                print(ep1,ep2,ep3)
+                print(e1m,e1p)
+                print(e2m,e2p)
+                print(e3m,e3p)
+
                 aa = ep1/r2
                 bb = ep2/r2
                 cc = ep3/r2
@@ -396,7 +406,6 @@ class AXIsolver:
     def runSolver(self):
         # Main computational loop
         mit = 0
-        self.body()
         if self.doprint > 0:
             self.printer(mit,self.delm)
         convrg = False

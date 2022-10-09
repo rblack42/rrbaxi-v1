@@ -8,7 +8,7 @@
          x(1) = x0/xl2-dxi
          x(2) = x(1) + dxi
        end if
-       xmu1 = xmuiinf*x(1)
+       xmu1 = xmuinf*x(1)
        xmu2 = xmuinf*x(2)
        rsx(1) = tan(thetas)
        rsx(2) = rsx(1)

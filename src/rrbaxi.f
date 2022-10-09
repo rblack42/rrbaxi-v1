@@ -17,7 +17,7 @@ C      set logical flags
        x0 = 5.0
        dxi = 0.0004
        xmuinf = 0.00002
-       beta = 20.0
+       beta = -20.0
        neta = 31
        nitmax = 750
        nplot = 2
@@ -42,7 +42,7 @@ C      set logical flags
        x0 = x0+dx0
        xl1 = xl1+dx0
        xl2 = xl2+dx0
-
+c      set initial conditions
        et=0.
        do 50 i=1,neta
           eta(i) = et
@@ -53,7 +53,10 @@ C      set logical flags
           et = et + deta
 50     continue
        u(1) = 0.
-       v(1) = 0
+       v(1) = 0.
+
+       xmu1 = 0.0
+       xmu2 = 0.0
 
        mit = 0
        call body
@@ -63,7 +66,7 @@ C      set logical flags
        call body
        call precor
        mit = mit + 1
-
+       print *,'mit=', mit
        if (march) then
          if (x(2).gt.xplot) then
            call prnter
