@@ -295,10 +295,10 @@ class AXIsolver:
                 ep3 = ep3 -self.dxi*etaxm*den1*(e3p-e3m) - \
                     self.dxi*etar*den1*(f3p-f3m)+self.dxi*h3
                 r2 = self.rb[2]+self.eta[i]*(self.rs[2]-self.rb[2])
-                print(ep1,ep2,ep3)
-                print(e1m,e1p)
-                print(e2m,e2p)
-                print(e3m,e3p)
+                print('a',ep1,ep2,ep3)
+                print('b',e1m,e1p)
+                print('c',e2m,e2p)
+                print('d',e3m,e3p)
 
                 aa = ep1/r2
                 bb = ep2/r2
