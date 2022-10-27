@@ -1,0 +1,14 @@
+# Table of contents
+# Learn more at https://jupyterbook.org/customize/toc.html
+
+format: jb-book
+root: intro
+chapters:
+- file: fluid-properties
+- file: nondimensionalization
+- file: ideal gas properties
+- file: maccormacks-method
+- file: axisymmetric-pns
+- file: markdown
+- file: notebooks
+- file: markdown-notebooks
