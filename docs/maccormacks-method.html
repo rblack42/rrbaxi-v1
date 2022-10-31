@@ -1,0 +1,942 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>MacCormack’s Method &#8212; RRBAXI: Parabolized Navier-Stokes Solver</title>
+    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" href="_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Axisymmetric PNS for Ogive-Cylinder" href="axisymmetric-pns.html" />
+    <link rel="prev" title="Nondimensionalization" href="nondimensionalization.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+<!-- Checkboxes to toggle the left sidebar -->
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle navigation sidebar">
+<label class="overlay overlay-navbar" for="__navigation">
+    <div class="visually-hidden">Toggle navigation sidebar</div>
+</label>
+<!-- Checkboxes to toggle the in-page toc -->
+<input type="checkbox" class="sidebar-toggle" name="__page-toc" id="__page-toc" aria-label="Toggle in-page Table of Contents">
+<label class="overlay overlay-pagetoc" for="__page-toc">
+    <div class="visually-hidden">Toggle in-page Table of Contents</div>
+</label>
+<!-- Headers at the top -->
+<div class="announcement header-item noprint"></div>
+<div class="header header-item noprint"></div>
+
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<!-- Sidebar -->
+<div class="bd-sidebar noprint" id="site-navigation">
+    <div class="bd-sidebar__content">
+        <div class="bd-sidebar__top"><div class="navbar-brand-box">
+    <a class="navbar-brand text-wrap" href="index.html">
+      
+        <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
+        
+      
+      
+      <img src="_static/logo.png" class="logo" alt="logo">
+      
+      
+      <h1 class="site-logo" id="site-title">RRBAXI: Parabolized Navier-Stokes Solver</h1>
+      
+    </a>
+</div><form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="intro.html">
+                    RRBAXI
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="fluid-properties.html">
+   Fluid Properties
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="nondimensionalization.html">
+   Nondimensionalization
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   MacCormack’s Method
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="axisymmetric-pns.html">
+   Axisymmetric PNS for Ogive-Cylinder
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="markdown.html">
+   Markdown Files
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="notebooks.html">
+   Content with notebooks
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="markdown-notebooks.html">
+   Notebooks with MyST Markdown
+  </a>
+ </li>
+</ul>
+
+    </div>
+</nav></div>
+        <div class="bd-sidebar__bottom">
+             <!-- To handle the deprecated key -->
+            
+            <div class="navbar_extra_footer">
+            Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
+            </div>
+            
+        </div>
+    </div>
+    <div id="rtd-footer-container"></div>
+</div>
+
+
+          
+
+
+          
+<!-- A tiny helper pixel to detect if we've scrolled -->
+<div class="sbt-scroll-pixel-helper"></div>
+<!-- Main content -->
+<div class="col py-0 content-container">
+    
+    <div class="header-article row sticky-top noprint">
+        
+
+
+
+<div class="col py-1 d-flex header-article-main">
+    <div class="header-article__left">
+        
+        <label for="__navigation"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="right"
+title="Toggle navigation"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-bars"></i>
+  </span>
+
+</label>
+
+        
+    </div>
+    <div class="header-article__right">
+<div class="menu-dropdown menu-dropdown-launch-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Launch interactive content">
+      <i class="fas fa-rocket"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="https://mybinder.org/v2/gh/executablebooks/jupyter-book/master?urlpath=tree/docs/maccormacks-method.ipynb"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Launch on Binder"
+>
+  
+
+<span class="headerbtn__icon-container">
+  
+    <img src="_static/images/logo_binder.svg">
+  </span>
+<span class="headerbtn__text-container">Binder</span>
+</a>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+
+<button onclick="toggleFullScreen()"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="bottom"
+title="Fullscreen mode"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+<div class="menu-dropdown menu-dropdown-repository-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Source repositories">
+      <i class="fab fa-github"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="https://github.com/executablebooks/jupyter-book"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Source repository"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="headerbtn__text-container">repository</span>
+</a>
+
+      </li>
+      
+      <li>
+        <a href="https://github.com/executablebooks/jupyter-book/issues/new?title=Issue%20on%20page%20%2Fmaccormacks-method.html&body=Your%20issue%20content%20here."
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Open an issue"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="headerbtn__text-container">open issue</span>
+</a>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+
+<div class="menu-dropdown menu-dropdown-download-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Download this page">
+      <i class="fas fa-download"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="_sources/maccormacks-method.ipynb"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Download source file"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="headerbtn__text-container">.ipynb</span>
+</a>
+
+      </li>
+      
+      <li>
+        
+<button onclick="printPdf(this)"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="left"
+title="Print to PDF"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="headerbtn__text-container">.pdf</span>
+</button>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+<label for="__page-toc"
+  class="headerbtn headerbtn-page-toc"
+  
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-list"></i>
+  </span>
+
+</label>
+
+    </div>
+</div>
+
+<!-- Table of contents -->
+<div class="col-md-3 bd-toc show noprint">
+    <div class="tocsection onthispage pt-5 pb-3">
+        <i class="fas fa-list"></i> Contents
+    </div>
+    <nav id="bd-toc-nav" aria-label="Page">
+        <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#predictor-step">
+   Predictor Step:
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#corrector-step">
+   Corrector Step
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#spatial-marching">
+   Spatial Marching
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#simple-wave-equation">
+   Simple Wave Equation
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#finite-differences">
+     Finite Differences
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#using-maccormack-s-method">
+     Using MacCormack’s Method
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#memory-requirements">
+     Memory Requirements
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+    </nav>
+</div>
+    </div>
+    <div class="article row">
+        <div class="col pl-md-3 pl-lg-5 content-container">
+            <!-- Table of contents that is only displayed when printing the page -->
+            <div id="jb-print-docs-body" class="onlyprint">
+                <h1>MacCormack’s Method</h1>
+                <!-- Table of contents -->
+                <div id="print-main-content">
+                    <div id="jb-print-toc">
+                        
+                        <div>
+                            <h2> Contents </h2>
+                        </div>
+                        <nav aria-label="Page">
+                            <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#predictor-step">
+   Predictor Step:
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#corrector-step">
+   Corrector Step
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#spatial-marching">
+   Spatial Marching
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#simple-wave-equation">
+   Simple Wave Equation
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#finite-differences">
+     Finite Differences
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#using-maccormack-s-method">
+     Using MacCormack’s Method
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#memory-requirements">
+     Memory Requirements
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            <main id="main-content" role="main">
+                
+              <div>
+                
+  <section class="tex2jax_ignore mathjax_ignore" id="maccormack-s-method">
+<h1>MacCormack’s Method<a class="headerlink" href="#maccormack-s-method" title="Permalink to this headline">#</a></h1>
+<p>Given a set of equations in the form:</p>
+<p>\begin{equation}
+\frac{\partial {\bf E}}{\partial \xi} +
+\frac{\partial {\bf F}}{\partial \eta} +
+{\bf H} = 0
+\end{equation}</p>
+<p>Where <span class="math notranslate nohighlight">\(\xi\)</span> and <span class="math notranslate nohighlight">\(\eta\)</span> are generalized, non-orthogonal, coordinates in the axial and radial directions.</p>
+<p>The computational grid is a set of evenly spaced points running from the surface of the ogive-cylinder body to a point assumed to be beyond the shock wave formed over the body while moving at hypersonic speeds. This outer boundary is just a cone of some set cone angle. The solution assumes that the first point away from the body surface is supersonic. Therefore, we are not attempting to model the boundary layer near the body surface.</p>
+<p>We will count points in the two spacial directions using indexes <strong>i</strong> for radial points, and <strong>j</strong> for axial points.</p>
+<p>MacCormack’s method solves this equation in two steps, called <em>Predictor-Corrector</em>:</p>
+<section id="predictor-step">
+<h2>Predictor Step:<a class="headerlink" href="#predictor-step" title="Permalink to this headline">#</a></h2>
+<p>We pproximate derivatives in each direction using simple finite-differencing:</p>
+<p>\begin{equation}
+\frac{E^\overline{j+1}<em>i- E^j_i}{\Delta \xi} +
+\frac{F^j</em>{i+1} - F^j_i}{\Delta \eta}</p>
+<ul class="simple">
+<li><p>{\bf H}^j_i = 0
+\end{equation}</p></li>
+</ul>
+<p>or</p>
+<p>\begin{equation}
+E^\overline{j+1}<em>i =  E^j_i - \frac{\Delta \xi}{\Delta \eta}\left(
+F^j</em>{i+1} - F^j_i
+\right)</p>
+<ul class="simple">
+<li><p>{\bf H}^j_i = 0
+\end{equation}</p></li>
+</ul>
+</section>
+<section id="corrector-step">
+<h2>Corrector Step<a class="headerlink" href="#corrector-step" title="Permalink to this headline">#</a></h2>
+<p>\begin{equation}
+E^{j+\frac{1}{2}}_i =
+\frac{E^j_i + E^\overline{j + 1}_i}{2}
+\end{equation}</p>
+<p>\begin{equation}
+E^{j+1}_i =  E^\overline{j+\frac{1}{2}}_i - \frac{\Delta \xi}{2\Delta \eta}\left(
+F^\overline{j+1}<em>i - F^\overline{j+1}</em>{i-1}
+\right)</p>
+<ul class="simple">
+<li><p>{\bf H}^j_i = 0
+\end{equation}</p></li>
+</ul>
+<p>or</p>
+<p>\begin{equation}
+E^{j+1}_i =  \frac{E^j_i + E^\overline{j+1}_i}{2} - \frac{\Delta \xi}{2\Delta \eta}\left(
+F^\overline{j+1}<em>i - F^\overline{j+1}</em>{i-1}
+\right)</p>
+<ul class="simple">
+<li><p>{\bf H}^\overline{j+1}_i = 0
+\end{equation}</p></li>
+</ul>
+</section>
+<section id="spatial-marching">
+<h2>Spatial Marching<a class="headerlink" href="#spatial-marching" title="Permalink to this headline">#</a></h2>
+<p>The solution technique involves marching in the <span class="math notranslate nohighlight">\(\xi\)</span> direction. Assuming we have a solution for all <span class="math notranslate nohighlight">\(\eta\)</span> points at some point <span class="math notranslate nohighlight">\(\xi\)</span>, we loop over <span class="math notranslate nohighlight">\(\eta\)</span> from the body to the outer boundary using the <em>predictor</em> equation to calculate new properties for the point at <span class="math notranslate nohighlight">\(\eta\)</span> and <span class="math notranslate nohighlight">\(\xi + \Delta\xi\)</span>. This step involves forward differences in the <span class="math notranslate nohighlight">\(\eta\)</span> direction, meaning we need points at <span class="math notranslate nohighlight">\(\eta\)</span> and <span class="math notranslate nohighlight">\(\eta - \Delta \eta\)</span>. We cannot use the <em>corrector</em> step at the same time since that step uses backward differences that will require values ahead of the loop. We can solve this problem by storing <em>predictor</em> values in a small working array. We can apply the <em>corrector</em> equation as soon as we have two value sin this working array. The corrector step thus lags the predictor step by one <span class="math notranslate nohighlight">\(\eta\)</span> value. We can safely overwrite the solution array at this point so that the loop will produce all values at the new value of <span class="math notranslate nohighlight">\(\xi\)</span>.</p>
+<p>This scheme significantly reduces the memory needed to generate a solution at the expense of managing the working array. We will need to shift values in the working array as we sweep over the primary loop.</p>
+<p>Let’s look at the code, using Python for this example</p>
+</section>
+<section id="simple-wave-equation">
+<h2>Simple Wave Equation<a class="headerlink" href="#simple-wave-equation" title="Permalink to this headline">#</a></h2>
+<p>In this section, we will use an example from <span class="xref myst">Numerical Computation of Compressible and Viscous Flow</span> to explore the marching algorithm.</p>
+<p>The equation we will model is a simple wave flow model:</p>
+<p>\begin{equation}
+\frac{\partial u}{\partial t} + c \frac{\partial u}{\partial x} = 0
+\end{equation}</p>
+<p>Where <strong>u</strong> is the local velocity and <strong>c</strong> is the wave speed.</p>
+<p>We will use initial conditions used in the reference:</p>
+<p>\begin{equation}
+u=
+\begin{cases}
+1, &amp; \text{if}\ x \leq \frac{1}{2} \
+\frac{1}{2}, &amp; \text{if}\ x \gt \frac{1}{2}
+\end{cases}
+\end{equation}</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">nx</span> <span class="o">=</span> <span class="mi">41</span>
+<span class="n">dx</span> <span class="o">=</span> <span class="mi">2</span><span class="o">/</span><span class="mi">40</span>
+<span class="n">nt</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">c</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">dt</span> <span class="o">=</span> <span class="mf">0.9</span><span class="o">*</span><span class="n">dx</span><span class="o">/</span><span class="n">c</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nx</span><span class="p">))</span>
+<span class="n">ui</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nx</span><span class="p">))</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nx</span><span class="p">))</span>
+<span class="n">du</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nx</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">du</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>41
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">math</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">nx</span><span class="p">):</span>
+    <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span><span class="o">*</span><span class="n">dx</span>
+    <span class="k">if</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mf">0.5</span><span class="p">:</span>
+        <span class="n">ui</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ui</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span>
+        
+<span class="k">def</span> <span class="nf">ureset</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">nx</span><span class="p">):</span>
+        <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">ui</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="k">def</span> <span class="nf">show_curve</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">title</span><span class="p">,</span><span class="n">xlabel</span><span class="p">,</span><span class="n">ylabel</span><span class="p">):</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="n">xlabel</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="n">ylabel</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ureset</span><span class="p">()</span>
+<span class="n">show_curve</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">u</span><span class="p">,</span><span class="s2">&quot;Wave Flow&quot;</span><span class="p">,</span><span class="s2">&quot;x&quot;</span><span class="p">,</span><span class="s2">&quot;u&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/maccormacks-method_20_0.png" src="_images/maccormacks-method_20_0.png" />
+</div>
+</div>
+<section id="finite-differences">
+<h3>Finite Differences<a class="headerlink" href="#finite-differences" title="Permalink to this headline">#</a></h3>
+<p>We use a simple scheme, based on a first-order <em>Taylor’s Series</em> to come up with equations for the derivatives:</p>
+<p>\begin{equation}
+\frac{\partial u}{\partial t} = \frac{u^{n+1}_i - u^n_i}{\Delta t}
+\end{equation}</p>
+<p>Where <strong>j</strong> indicated the time value, and <strong>i</strong> the <strong>x</strong> value.</p>
+<p>\begin{equation}
+t = t_0 + n{\Delta t} \
+x = x_0 + i{\Delta x}
+\end{equation}</p>
+<p>\begin{equation}
+\frac{\partial u}{\partial x} = \frac{u^n_i - u^n_{i-1}}{\Delta x}
+\end{equation}</p>
+<p>Substituting these two finite difference equations into our example equation gives us a new equation we can use generate new values, marching in time:</p>
+<p>\begin{equation}
+\frac{u^{n+1}<em>i - u^n_i}{\Delta t} +
+c \frac{u^n_i - u^n</em>{i-1}}{\Delta x} = 0
+\end{equation}</p>
+<p>Rearranging:</p>
+<p>\begin{equation}
+u^{n+1}<em>i =  u^n_i -
+\frac{c\Delta t}{\Delta x}(u^n_i - u^n</em>{i-1}) = 0
+\end{equation}</p>
+<p>The exact solution is given by:</p>
+<p>\begin{equation}
+u(x,t) = g(x - c(t-t_0))
+\end{equation}</p>
+<p>We can demonstrate this scheme using Python:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># reset initial conditions</span>
+<span class="n">ureset</span><span class="p">()</span>
+    
+<span class="c1"># loop over time</span>
+<span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">nt</span><span class="p">):</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">n</span><span class="o">*</span><span class="n">dt</span>
+    <span class="c1"># calculate backward differences</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">nx</span><span class="p">):</span>
+        <span class="n">du</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        
+    <span class="c1"># update u[i] for next time value</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">nx</span><span class="p">):</span>
+        <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">c</span> <span class="o">*</span> <span class="n">dt</span><span class="o">/</span><span class="n">dx</span> <span class="o">*</span> <span class="n">du</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> 
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">show_curve</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">u</span><span class="p">,</span><span class="s2">&quot;Wave Flow (</span><span class="si">%d</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">t</span><span class="p">,</span><span class="s2">&quot;x&quot;</span><span class="p">,</span><span class="s2">&quot;u&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/maccormacks-method_29_0.png" src="_images/maccormacks-method_29_0.png" />
+</div>
+</div>
+<p>Just for fun, let’s try this using forward differences:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># reset initial conditions</span>
+<span class="n">ureset</span><span class="p">()</span>
+    
+<span class="c1"># loop over time</span>
+<span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">nt</span><span class="p">):</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">n</span><span class="o">*</span><span class="n">dt</span>
+    
+    <span class="c1"># calculate forward differences</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">nx</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">du</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        
+    <span class="c1"># update u[i] for next time value</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">nx</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">c</span> <span class="o">*</span> <span class="n">dt</span><span class="o">/</span><span class="n">dx</span> <span class="o">*</span> <span class="n">du</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> 
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">show_curve</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">u</span><span class="p">,</span><span class="s2">&quot;Wave Flow (</span><span class="si">%d</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">t</span><span class="p">,</span><span class="s2">&quot;x&quot;</span><span class="p">,</span><span class="s2">&quot;u&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/maccormacks-method_32_0.png" src="_images/maccormacks-method_32_0.png" />
+</div>
+</div>
+<p>This certainly does not look good! Let’s try another scheme</p>
+</section>
+<section id="using-maccormack-s-method">
+<h3>Using MacCormack’s Method<a class="headerlink" href="#using-maccormack-s-method" title="Permalink to this headline">#</a></h3>
+<p>The previous example uses a first-order accurate approximation for the spatial derivative. *MacCormack’s method will produce a more accurate second order approximation.</p>
+<p>The predictor step is identical to the previous example. The corrector
+step needs to be added.</p>
+<p>Predictor:</p>
+<p>\begin{equation}
+u^\overline{n+1}<em>i =  u^n_i -
+\frac{c\Delta t}{\Delta x}(u^n_i - u^n</em>{i-1}) = 0
+\end{equation}</p>
+<p>Corrector:</p>
+<p>\begin{equation}
+u^{n+1}<em>i =  \frac{u^j_i + u^\overline{n+1}<em>i}{2} - \frac{c\Delta t}{2\Delta x}\left(
+u^\overline{n+1}</em>{i+1} - u^\overline{n+1}</em>{i}
+\right)
+\end{equation}</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># create storage for predictor values</span>
+<span class="n">up</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nx</span><span class="p">))</span>
+<span class="n">du</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nx</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ureset</span><span class="p">()</span>
+
+<span class="c1"># loop over time</span>
+<span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">nt</span><span class="p">):</span>
+    <span class="n">t</span> <span class="o">-</span> <span class="n">n</span> <span class="o">*</span> <span class="n">dt</span>
+    
+    <span class="c1"># predictor - backward differences</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">nx</span><span class="p">):</span>
+        <span class="n">du</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">up</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">c</span> <span class="o">*</span> <span class="n">dt</span><span class="o">/</span><span class="n">dx</span> <span class="o">*</span> <span class="n">du</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="n">up</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">u</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># update left bundary</span>
+    
+    <span class="c1"># Corrector - forward differences</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">nx</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">du</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">up</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">up</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">up</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">c</span> <span class="o">*</span> <span class="n">dt</span><span class="o">/</span><span class="n">dx</span> <span class="o">*</span> <span class="n">du</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> 
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">show_curve</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">u</span><span class="p">,</span><span class="s2">&quot;Wave Flow (</span><span class="si">%d</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">t</span><span class="p">,</span><span class="s2">&quot;x&quot;</span><span class="p">,</span><span class="s2">&quot;u&quot;</span><span class="p">)</span>
+    
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/maccormacks-method_37_0.png" src="_images/maccormacks-method_37_0.png" />
+</div>
+</div>
+<p>Let’s try reversing the order of the differences:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ureset</span><span class="p">()</span>
+
+<span class="c1"># loop over time</span>
+<span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">nt</span><span class="p">):</span>
+    <span class="n">t</span> <span class="o">-</span> <span class="n">n</span> <span class="o">*</span> <span class="n">dt</span>
+    
+    <span class="c1"># predictor - forward differences</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">nx</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">du</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">up</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">c</span> <span class="o">*</span> <span class="n">dt</span><span class="o">/</span><span class="n">dx</span> <span class="o">*</span> <span class="n">du</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="n">up</span><span class="p">[</span><span class="n">nx</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">u</span><span class="p">[</span><span class="n">nx</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="c1"># update right bundary</span>
+    
+    <span class="c1"># Corrector - backward differences</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">nx</span><span class="p">):</span>
+        <span class="n">du</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">up</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">up</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">up</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">c</span> <span class="o">*</span> <span class="n">dt</span><span class="o">/</span><span class="n">dx</span> <span class="o">*</span> <span class="n">du</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> 
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">show_curve</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">u</span><span class="p">,</span><span class="s2">&quot;Wave Flow (</span><span class="si">%d</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">t</span><span class="p">,</span><span class="s2">&quot;x&quot;</span><span class="p">,</span><span class="s2">&quot;u&quot;</span><span class="p">)</span>    
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/maccormacks-method_40_0.png" src="_images/maccormacks-method_40_0.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ureset</span><span class="p">()</span>
+
+<span class="c1"># loop over time</span>
+<span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">nt</span><span class="p">):</span>
+    <span class="n">t</span> <span class="o">-</span> <span class="n">n</span> <span class="o">*</span> <span class="n">dt</span>
+    
+    <span class="c1"># predictor - backward differences</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">nx</span><span class="p">):</span>
+        <span class="n">du</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">up</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">c</span> <span class="o">*</span> <span class="n">dt</span><span class="o">/</span><span class="n">dx</span> <span class="o">*</span> <span class="n">du</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="n">up</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">u</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># update left boundary</span>
+    
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">nx</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">du</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">up</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">up</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        
+        <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">up</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">c</span> <span class="o">*</span> <span class="n">dt</span><span class="o">/</span><span class="n">dx</span> <span class="o">*</span> <span class="n">du</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">show_curve</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">u</span><span class="p">,</span><span class="s2">&quot;Wave Flow (</span><span class="si">%d</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">t</span><span class="p">,</span><span class="s2">&quot;x&quot;</span><span class="p">,</span><span class="s2">&quot;u&quot;</span><span class="p">)</span>    
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/maccormacks-method_42_0.png" src="_images/maccormacks-method_42_0.png" />
+</div>
+</div>
+<p>The solution is the same, no matter which way we apply the differences. Obviously, this works better, but we see an issue near the point where the <strong>u</strong> value changes abruptly.</p>
+</section>
+<section id="memory-requirements">
+<h3>Memory Requirements<a class="headerlink" href="#memory-requirements" title="Permalink to this headline">#</a></h3>
+<p>In the solutions above, we created storage for <strong>u</strong>, <strong>up</strong> and <strong>du</strong>. Can we improve this memory usage?</p>
+<p>In examining the code, we are looping over the <strong>x</strong> location values from left to right (increasing <strong>x</strong>). In the first version of the code, we used a backward difference, meaning that for each <em>predictor</em> calculation, we needed <strong>u</strong> values for the current <strong>x</strong> location, and one point behind that one. We saved the new predicted value in a <strong>up</strong> array, but that value is only needed until we can consume it during the <em>corrector</em>* sweep. The <strong>corrector</strong> needs the current predicted value plus the predicted value for the next <strong>x</strong> location, which we have not calculated yet.</p>
+<p>If we store predicted values in a working array, we can perform a <em>corrector</em> calculation on for the previous <strong>x</strong> location as soon as we complete the <em>predictor</em> for the current location.</p>
+<p>We can reduce the size of the <strong>up</strong> storage to just two <em>predictor</em> values to perform this calculation. Basically, this array will slide over the predicted values as we work through the loop. At any point in the loop, we can generate the *predictor value for this point, and the <em>corrector</em> value for the previous point. We need to consider the boundary conditions in the loop” the <em>predictor</em> must start at point one, and the <em>corrector</em> must stop one point before the maximum <strong>x</strong> value. At the end of the loop, we shift the stored *predictor value for the current point in preparation for the next loop.  The code should clear up this logic:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">wdu</span> <span class="o">=</span> <span class="mf">0.0</span> <span class="c1"># only store one value here</span>
+<span class="n">w</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span> <span class="c1"># the working predictor store</span>
+<span class="n">ureset</span><span class="p">()</span>
+
+<span class="c1"># loop over time</span>
+<span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">nt</span><span class="p">):</span>
+    <span class="n">t</span> <span class="o">-</span> <span class="n">n</span> <span class="o">*</span> <span class="n">dt</span>
+    
+    <span class="c1"># predictor - backward differences</span>
+    <span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">u</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># update left bundary</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">nx</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">wdu</span> <span class="o">=</span> <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">w</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">c</span> <span class="o">*</span> <span class="n">dt</span><span class="o">/</span><span class="n">dx</span> <span class="o">*</span> <span class="n">wdu</span>
+        
+        <span class="c1"># Corrector - forward differences, lags one</span>
+        <span class="n">wdu</span> <span class="o">=</span> <span class="n">w</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">c</span> <span class="o">*</span> <span class="n">dt</span><span class="o">/</span><span class="n">dx</span> <span class="o">*</span> <span class="n">wdu</span><span class="p">)</span>
+        
+        <span class="c1"># shift working storage</span>
+        <span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">w</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">show_curve</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">u</span><span class="p">,</span><span class="s2">&quot;Wave Flow (</span><span class="si">%d</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">t</span><span class="p">,</span><span class="s2">&quot;x&quot;</span><span class="p">,</span><span class="s2">&quot;u&quot;</span><span class="p">)</span>    
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/maccormacks-method_48_0.png" src="_images/maccormacks-method_48_0.png" />
+</div>
+</div>
+<p>We have reduce the code to one loop, and reduced the <em>predictor</em> storage  array from <strong>nx</strong> points to two. This was an important improvement back when the original code was developed, since even mainframes had limited storage available. (Not to mention desktop calculators of the day, where the code was also run!)</p>
+</section>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            kernelName: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+              </div>
+              
+            </main>
+            <footer class="footer-article noprint">
+                
+    <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+    <a class='left-prev' id="prev-link" href="nondimensionalization.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">Nondimensionalization</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="axisymmetric-pns.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Axisymmetric PNS for Ogive-Cylinder</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
+</div>
+            </footer>
+        </div>
+    </div>
+    <div class="footer-content row">
+        <footer class="col footer"><p>
+  
+    By Roie R. Black<br/>
+  
+      &copy; Copyright 2022.<br/>
+</p>
+        </footer>
+    </div>
+    
+</div>
+
+
+      </div>
+    </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+
+
+  </body>
+</html>

@@ -1,0 +1,1128 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Solving For Primative Variables &#8212; RRBAXI: Parabolized Navier-Stokes Solver</title>
+    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" href="_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Governing Equations" href="governing-equations.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+<!-- Checkboxes to toggle the left sidebar -->
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle navigation sidebar">
+<label class="overlay overlay-navbar" for="__navigation">
+    <div class="visually-hidden">Toggle navigation sidebar</div>
+</label>
+<!-- Checkboxes to toggle the in-page toc -->
+<input type="checkbox" class="sidebar-toggle" name="__page-toc" id="__page-toc" aria-label="Toggle in-page Table of Contents">
+<label class="overlay overlay-pagetoc" for="__page-toc">
+    <div class="visually-hidden">Toggle in-page Table of Contents</div>
+</label>
+<!-- Headers at the top -->
+<div class="announcement header-item noprint"></div>
+<div class="header header-item noprint"></div>
+
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<!-- Sidebar -->
+<div class="bd-sidebar noprint" id="site-navigation">
+    <div class="bd-sidebar__content">
+        <div class="bd-sidebar__top"><div class="navbar-brand-box">
+    <a class="navbar-brand text-wrap" href="index.html">
+      
+        <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
+        
+      
+      
+      <img src="_static/logo.png" class="logo" alt="logo">
+      
+      
+      <h1 class="site-logo" id="site-title">RRBAXI: Parabolized Navier-Stokes Solver</h1>
+      
+    </a>
+</div><form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="intro.html">
+                    RRBAXI
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="basic-concepts.html">
+   Basic Concepts
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ideal-gas-properties.html">
+   Ideal Gas Properties
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="governing-equations.html">
+   Governing Equations
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   Solving For Primative Variables
+  </a>
+ </li>
+</ul>
+
+    </div>
+</nav></div>
+        <div class="bd-sidebar__bottom">
+             <!-- To handle the deprecated key -->
+            
+            <div class="navbar_extra_footer">
+            Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
+            </div>
+            
+        </div>
+    </div>
+    <div id="rtd-footer-container"></div>
+</div>
+
+
+          
+
+
+          
+<!-- A tiny helper pixel to detect if we've scrolled -->
+<div class="sbt-scroll-pixel-helper"></div>
+<!-- Main content -->
+<div class="col py-0 content-container">
+    
+    <div class="header-article row sticky-top noprint">
+        
+
+
+
+<div class="col py-1 d-flex header-article-main">
+    <div class="header-article__left">
+        
+        <label for="__navigation"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="right"
+title="Toggle navigation"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-bars"></i>
+  </span>
+
+</label>
+
+        
+    </div>
+    <div class="header-article__right">
+<div class="menu-dropdown menu-dropdown-launch-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Launch interactive content">
+      <i class="fas fa-rocket"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="https://mybinder.org/v2/gh/executablebooks/jupyter-book/master?urlpath=tree/docs/solver.ipynb"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Launch on Binder"
+>
+  
+
+<span class="headerbtn__icon-container">
+  
+    <img src="_static/images/logo_binder.svg">
+  </span>
+<span class="headerbtn__text-container">Binder</span>
+</a>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+
+<button onclick="toggleFullScreen()"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="bottom"
+title="Fullscreen mode"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+<div class="menu-dropdown menu-dropdown-repository-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Source repositories">
+      <i class="fab fa-github"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="https://github.com/executablebooks/jupyter-book"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Source repository"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="headerbtn__text-container">repository</span>
+</a>
+
+      </li>
+      
+      <li>
+        <a href="https://github.com/executablebooks/jupyter-book/issues/new?title=Issue%20on%20page%20%2Fsolver.html&body=Your%20issue%20content%20here."
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Open an issue"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="headerbtn__text-container">open issue</span>
+</a>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+
+<div class="menu-dropdown menu-dropdown-download-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Download this page">
+      <i class="fas fa-download"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="_sources/solver.ipynb"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Download source file"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="headerbtn__text-container">.ipynb</span>
+</a>
+
+      </li>
+      
+      <li>
+        
+<button onclick="printPdf(this)"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="left"
+title="Print to PDF"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="headerbtn__text-container">.pdf</span>
+</button>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+<label for="__page-toc"
+  class="headerbtn headerbtn-page-toc"
+  
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-list"></i>
+  </span>
+
+</label>
+
+    </div>
+</div>
+
+<!-- Table of contents -->
+<div class="col-md-3 bd-toc show noprint">
+    <div class="tocsection onthispage pt-5 pb-3">
+        <i class="fas fa-list"></i> Contents
+    </div>
+    <nav id="bd-toc-nav" aria-label="Page">
+        <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#state-equation">
+   State Equation
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#definition-of-total-enthalpy">
+   Definition of Total Enthalpy
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#definition-of-specific-heat-coefficient">
+     Definition of Specific Heat Coefficient
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#definition-of-static-enthalpy">
+     Definition of Static Enthalpy
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#unverified-code-below">
+   unverified code below ===============================================
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#definition-of-mach-number">
+   Definition of Mach Number
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#speed-of-sound">
+   Speed of Sound
+  </a>
+ </li>
+</ul>
+
+    </nav>
+</div>
+    </div>
+    <div class="article row">
+        <div class="col pl-md-3 pl-lg-5 content-container">
+            <!-- Table of contents that is only displayed when printing the page -->
+            <div id="jb-print-docs-body" class="onlyprint">
+                <h1>Solving For Primative Variables</h1>
+                <!-- Table of contents -->
+                <div id="print-main-content">
+                    <div id="jb-print-toc">
+                        
+                        <div>
+                            <h2> Contents </h2>
+                        </div>
+                        <nav aria-label="Page">
+                            <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#state-equation">
+   State Equation
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#definition-of-total-enthalpy">
+   Definition of Total Enthalpy
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#definition-of-specific-heat-coefficient">
+     Definition of Specific Heat Coefficient
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#definition-of-static-enthalpy">
+     Definition of Static Enthalpy
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#unverified-code-below">
+   unverified code below ===============================================
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#definition-of-mach-number">
+   Definition of Mach Number
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#speed-of-sound">
+   Speed of Sound
+  </a>
+ </li>
+</ul>
+
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            <main id="main-content" role="main">
+                
+              <div>
+                
+  <section class="tex2jax_ignore mathjax_ignore" id="solving-for-primative-variables">
+<h1>Solving For Primative Variables<a class="headerlink" href="#solving-for-primative-variables" title="Permalink to this headline">#</a></h1>
+<p>The governing equations for parabolized Navier-Stokes are set to generate these variables as the solution proceeds:</p>
+<p>\begin{align}
+A &amp;= \rho u\
+B &amp;= \rho u^2 + p \
+C &amp;= \rho u v \
+D &amp;= \rho u w \
+E &amp;= \rho u H
+\end{align}</p>
+<p>We need to set up a routine that will reduce these variables to the basic flow properties. To do this, we need some additional equations. We will use <strong>sympy</strong> to set up these equations.</p>
+<p>A simple inspection will show that we can eliminate three of these variables immediately:</p>
+<p>\begin{align}
+v &amp;= \frac{C}{A} \
+w &amp;= \frac{D}{A} \
+H &amp;= \frac{E}{A}
+\end{align}</p>
+<p>This leaves us with two equations in three remaining unknowns <span class="math notranslate nohighlight">\(\rho, u, p\)</span>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sympy</span> <span class="kn">import</span> <span class="n">var</span><span class="p">,</span> <span class="n">solve</span><span class="p">,</span> <span class="n">simplify</span><span class="p">,</span> <span class="n">expand</span><span class="p">,</span> <span class="n">collect</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>When using <strong>sympy</strong>, we need to create equations where the right-hand side is always zero. That is simple enough is we just move any terms on the right over to the left side.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">A</span><span class="p">,</span> <span class="n">B</span> <span class="o">=</span> <span class="n">var</span><span class="p">(</span><span class="s1">&#39;A B&#39;</span><span class="p">)</span>
+<span class="n">rho</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">p</span> <span class="o">=</span> <span class="n">var</span><span class="p">(</span><span class="s1">&#39;rho u p&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now, we create our equations:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">eq1</span> <span class="o">=</span> <span class="n">rho</span><span class="o">*</span><span class="n">u</span> <span class="o">-</span> <span class="n">A</span>
+<span class="n">eq2</span> <span class="o">=</span> <span class="n">rho</span><span class="o">*</span><span class="n">u</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">p</span> <span class="o">-</span><span class="n">B</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="state-equation">
+<h2>State Equation<a class="headerlink" href="#state-equation" title="Permalink to this headline">#</a></h2>
+<p>From our previous work, here is the state equation in  nondimensional form:</p>
+<p>\begin{equation}
+p = \frac{\gamma - 1}{\gamma} \rho T
+\end{equation}</p>
+<p>Using this equation adds two more variables, one of which is a constant for our work: <span class="math notranslate nohighlight">\(\gamma = 1.4\)</span>. We need to add these terms to <em>SymPy</em>, then add the state equation to our working set:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">T</span><span class="p">,</span> <span class="n">gamma</span> <span class="o">=</span> <span class="n">var</span><span class="p">(</span><span class="s1">&#39;T gamma&#39;</span><span class="p">)</span>
+<span class="n">eq3</span> <span class="o">=</span> <span class="p">(</span><span class="n">gamma</span><span class="o">/</span><span class="p">(</span><span class="n">gamma</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span><span class="o">*</span><span class="n">rho</span><span class="o">*</span><span class="n">T</span> <span class="o">-</span> <span class="n">p</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="definition-of-total-enthalpy">
+<h2>Definition of Total Enthalpy<a class="headerlink" href="#definition-of-total-enthalpy" title="Permalink to this headline">#</a></h2>
+<p>Next, we will use the total enthalpy to complete our equation set:</p>
+<p>\begin{equation}
+H = h + \frac{1}{2}\left(u^2 + v^2 + w^2\right)
+\end{equation}</p>
+<p>Define a new variable:</p>
+<p>\begin{equation}
+K = H - \frac{1}{2}(v^2 + w^2)
+\end{equation}</p>
+<p>Thus:</p>
+<p>\begin{equation}
+K = h + \frac{u^2}{2}
+\end{equation}</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">h</span><span class="p">,</span> <span class="n">K</span> <span class="o">=</span> <span class="n">var</span><span class="p">(</span><span class="s1">&#39;h K&#39;</span><span class="p">)</span>
+<span class="n">eq4</span> <span class="o">=</span> <span class="n">h</span> <span class="o">+</span> <span class="p">(</span><span class="n">u</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span> <span class="o">-</span> <span class="n">K</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="definition-of-specific-heat-coefficient">
+<h3>Definition of Specific Heat Coefficient<a class="headerlink" href="#definition-of-specific-heat-coefficient" title="Permalink to this headline">#</a></h3>
+<p>\begin{equation}
+c_p = \frac{\gamma}{\gamma-1}R_{gas}
+\end{equation}</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">c_p</span><span class="p">,</span> <span class="n">R</span> <span class="o">=</span> <span class="n">var</span><span class="p">(</span><span class="s1">&#39;c_p R&#39;</span><span class="p">)</span>
+<span class="n">eq5</span> <span class="o">=</span> <span class="p">(</span><span class="n">gamma</span><span class="o">/</span><span class="p">(</span><span class="n">gamma</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span><span class="o">*</span><span class="n">R</span> <span class="o">-</span> <span class="n">c_p</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="definition-of-static-enthalpy">
+<h3>Definition of Static Enthalpy<a class="headerlink" href="#definition-of-static-enthalpy" title="Permalink to this headline">#</a></h3>
+<p>\begin{equation}
+h = c_p T
+\end{equation}</p>
+<p>or</p>
+<p>\begin{equation}
+\rho c_p T = \frac{\rho R_{gas}}{\gamma - 1}
+\end{equation}</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">eq6</span> <span class="o">=</span> <span class="n">c_p</span> <span class="o">*</span> <span class="n">T</span> <span class="o">-</span> <span class="n">h</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">eq7</span> <span class="o">=</span> <span class="n">solve</span><span class="p">([</span><span class="n">eq1</span><span class="p">,</span><span class="n">eq2</span><span class="p">,</span><span class="n">eq3</span><span class="p">,</span><span class="n">eq4</span><span class="p">],[</span><span class="n">rho</span><span class="p">,</span><span class="n">u</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">T</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rho_c</span> <span class="o">=</span> <span class="p">(</span><span class="n">eq7</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">rho_c</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_latex math notranslate nohighlight">
+\[\displaystyle - \frac{\sqrt{2} A}{2 \sqrt{K - h}}\]</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">u_c</span> <span class="o">=</span> <span class="n">eq7</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">u_c</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_latex math notranslate nohighlight">
+\[\displaystyle - \sqrt{2 K - 2 h}\]</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">p_c</span> <span class="o">=</span> <span class="n">eq7</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">p_c</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_latex math notranslate nohighlight">
+\[\displaystyle A \sqrt{2 K - 2 h} + B\]</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">T_c</span> <span class="o">=</span> <span class="n">eq7</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span>
+<span class="n">T_c</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_latex math notranslate nohighlight">
+\[\displaystyle \frac{2 \left(- K + h\right) \left(\gamma - 1\right)}{\gamma} - \frac{\sqrt{2} B \sqrt{K - h} \left(\gamma - 1\right)}{A \gamma}\]</div>
+</div>
+</div>
+<p>That gives us six equations in the six unknowns we need to evaluate:</p>
+<p>\begin{equation}
+\rho, u, p, T, c_p, h
+\end{equation}</p>
+<p><em>SymPy</em> could solve this set of equations, but the result would be pretty messy. WE can simplify the set somewhat with a little more work.</p>
+<p>Looking at the equation set, we can eliminate the simple variables <span class="math notranslate nohighlight">\(C_p, v, w, H\)</span> since whey fall out directly.</p>
+<p>\begin{align}
+C_p &amp;= \frac{\gamma}{(\gamma-1)}R_{gas} \
+v &amp;= C/A \
+w &amp;= D/A \
+H &amp;= E/A \
+\end{align}</p>
+<p>Furthermore, <span class="math notranslate nohighlight">\(h\)</span> is related to <span class="math notranslate nohighlight">\(T\)</span> by a simple equation.</p>
+<p>\begin{equation}
+h = c_p T
+\end{equation}</p>
+<p>The definition of total enthalpy can be reduced a bit as well. We define a new variable, <span class="math notranslate nohighlight">\(K\)</span> as:</p>
+<p>\begin{equation}
+K = \frac{1}{2}\left(v^2 + w^2\right) - H
+\end{equation}</p>
+<p>\begin{equation}
+K = \frac{1}{2}\left(
+\frac{C^2}{A^2} + \frac{D^2}{A^2}
+\right) - \frac{E}{A}
+\end{equation}</p>
+<p>Let’s recreate our equation set with these reductions:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">R</span><span class="p">,</span> <span class="n">K</span> <span class="o">=</span> <span class="n">var</span><span class="p">(</span><span class="s1">&#39;R K&#39;</span><span class="p">)</span>
+<span class="n">Eq1</span> <span class="o">=</span> <span class="n">rho</span><span class="o">*</span><span class="n">u</span> <span class="o">-</span> <span class="n">A</span>
+<span class="n">Eq2</span> <span class="o">=</span> <span class="n">rho</span><span class="o">*</span><span class="n">u</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">p</span> <span class="o">-</span> <span class="n">B</span>
+<span class="n">Eq3</span> <span class="o">=</span> <span class="n">rho</span><span class="o">*</span><span class="n">R</span><span class="o">*</span><span class="n">T</span> <span class="o">-</span> <span class="n">p</span>
+<span class="n">Eq4</span> <span class="o">=</span> <span class="n">c_p</span><span class="o">*</span><span class="n">T</span> <span class="o">+</span> <span class="p">(</span><span class="n">u</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span> <span class="o">+</span> <span class="n">K</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">res</span> <span class="o">=</span> <span class="n">solve</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">Eq1</span><span class="p">,</span><span class="n">Eq2</span><span class="p">,</span><span class="n">Eq3</span><span class="p">,</span><span class="n">Eq4</span><span class="p">],</span>
+        <span class="p">[</span><span class="n">rho</span><span class="p">,</span><span class="n">u</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">T</span><span class="p">]</span>
+<span class="p">)</span>
+<span class="n">res</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[((-B*c_p - sqrt(-2*A**2*K*R**2 + 4*A**2*K*R*c_p + B**2*c_p**2))/(2*K*R),
+  (-B*c_p + sqrt(-2*A**2*K*R**2 + 4*A**2*K*R*c_p + B**2*c_p**2))/(A*(R - 2*c_p)),
+  (B*R - B*c_p - sqrt(-2*A**2*K*R**2 + 4*A**2*K*R*c_p + B**2*c_p**2))/(R - 2*c_p),
+  B*sqrt(-2*A**2*K*R**2 + 4*A**2*K*R*c_p + B**2*c_p**2)/(A**2*(R**2 - 4*R*c_p + 4*c_p**2)) + (2*A**2*K*R - 4*A**2*K*c_p - B**2*c_p)/(A**2*(R - 2*c_p)**2)),
+ ((-B*c_p + sqrt(-2*A**2*K*R**2 + 4*A**2*K*R*c_p + B**2*c_p**2))/(2*K*R),
+  (-B*c_p - sqrt(-2*A**2*K*R**2 + 4*A**2*K*R*c_p + B**2*c_p**2))/(A*(R - 2*c_p)),
+  (B*R - B*c_p + sqrt(-2*A**2*K*R**2 + 4*A**2*K*R*c_p + B**2*c_p**2))/(R - 2*c_p),
+  -B*sqrt(-2*A**2*K*R**2 + 4*A**2*K*R*c_p + B**2*c_p**2)/(A**2*(R**2 - 4*R*c_p + 4*c_p**2)) + (2*A**2*K*R - 4*A**2*K*c_p - B**2*c_p)/(A**2*(R - 2*c_p)**2))]
+</pre></div>
+</div>
+</div>
+</div>
+<p>Well, we still have some messy equations to work with. Let’s try to simplify these. We will start by looking at the first results for $each of our primitives from the solution:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rho_c</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># rho</span>
+<span class="n">rho_c</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_latex math notranslate nohighlight">
+\[\displaystyle \frac{- B c_{p} - \sqrt{- 2 A^{2} K R^{2} + 4 A^{2} K R c_{p} + B^{2} c_{p}^{2}}}{2 K R}\]</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">u_c</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="c1"># u</span>
+<span class="n">u_c</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_latex math notranslate nohighlight">
+\[\displaystyle \frac{- B c_{p} + \sqrt{- 2 A^{2} K R^{2} + 4 A^{2} K R c_{p} + B^{2} c_{p}^{2}}}{A \left(R - 2 c_{p}\right)}\]</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">p_c</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="c1"># p</span>
+<span class="n">p_c</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_latex math notranslate nohighlight">
+\[\displaystyle \frac{B R - B c_{p} - \sqrt{- 2 A^{2} K R^{2} + 4 A^{2} K R c_{p} + B^{2} c_{p}^{2}}}{R - 2 c_{p}}\]</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">T_c</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="c1"># T</span>
+<span class="n">T_c</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_latex math notranslate nohighlight">
+\[\displaystyle \frac{B \sqrt{- 2 A^{2} K R^{2} + 4 A^{2} K R c_{p} + B^{2} c_{p}^{2}}}{A^{2} \left(R^{2} - 4 R c_{p} + 4 c_{p}^{2}\right)} + \frac{2 A^{2} K R - 4 A^{2} K c_{p} - B^{2} c_{p}}{A^{2} \left(R - 2 c_{p}\right)^{2}}\]</div>
+</div>
+</div>
+<p>At this point, we could solve for all of our primitive variables using the above equations. However, we can simplify things by introducing the axial <em>Mach Number</em>:</p>
+<p>\begin{equation}
+M_x = \frac{u}{\sqrt{(\gamma-1)T}}
+\end{equation}</p>
+<p>Therefore:</p>
+<p>\begin{equation}
+u^2 = (\gamma - 1)T M_x^2
+\end{equation}</p>
+<p>Using this equation, we get this equation for <span class="math notranslate nohighlight">\(B\)</span>:</p>
+<p>\begin{equation}
+B = (\gamma - 1)\rho T M_x^2  + p
+\end{equation}</p>
+<p>From the state equation, we find:</p>
+<p>\begin{equation}
+\rho T = \frac{\gamma p}{\gamma - 1}
+\end{equation}</p>
+<p>Substituting this, we now get:</p>
+<p>\begin{equation}
+B = p ( 1 + \gamma M_x^2)
+\end{equation}</p>
+<p>or:
+\begin{equation}
+p = \frac{B}{1 + \gamma M_x^2}
+\end{equation}</p>
+<p>From the definition of total enthalpy:</p>
+<p>\begin{equation}
+H = c_p T + \frac{1}{2}\left((\gamma - 1)T M_x^2 + v^2 + w^2)\right)
+\end{equation}</p>
+<p>from the definition of <span class="math notranslate nohighlight">\(K\)</span> above above:</p>
+<p>\begin{equation}
+H = K - \frac{1}{2}\left(v^2 + w^2\right)
+\end{equation}</p>
+<p>or:</p>
+<p>\begin{equation}
+\left(v^2 + w^2\right) = 2(H - K)
+\end{equation}</p>
+<p>Plugging this back into our equation for <span class="math notranslate nohighlight">\(H\)</span> above, we get this:</p>
+<p>\begin{equation}
+c_p T + \frac{1}{2}\left((\gamma - 1)T M_x^2\right) - K = 0
+\end{equation}</p>
+<p>Rearranging, we get this equation for <span class="math notranslate nohighlight">\(T\)</span>:</p>
+<p>\begin{equation}
+T = \frac{K}{\biggl{c_p + \left(\frac{(\gamma - 1)}{2}M_x^2\right)\biggr}}
+\end{equation}</p>
+<p>From the state equation, we get this equation:</p>
+<p>\begin{equation}
+\rho = \frac{\gamma p}{(\gamma - 1) T} =
+\end{equation}</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Mx2</span> <span class="o">=</span> <span class="n">var</span><span class="p">(</span><span class="s1">&#39;Mx2&#39;</span><span class="p">)</span>
+<span class="n">p2</span> <span class="o">=</span> <span class="n">B</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">gamma</span> <span class="o">*</span> <span class="n">Mx2</span><span class="p">)</span>
+<span class="n">T2</span> <span class="o">=</span> <span class="n">K</span><span class="o">/</span><span class="p">(</span><span class="n">c_p</span> <span class="o">+</span> <span class="p">(</span><span class="n">gamma</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">Mx2</span><span class="p">)</span>
+<span class="n">rho2</span> <span class="o">=</span> <span class="n">gamma</span><span class="o">*</span><span class="n">p2</span><span class="o">/</span><span class="p">((</span><span class="n">gamma</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">T2</span><span class="p">)</span>
+<span class="n">rho2</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_latex math notranslate nohighlight">
+\[\displaystyle \frac{B \gamma \left(Mx_{2} \left(\frac{\gamma}{2} - \frac{1}{2}\right) + c_{p}\right)}{K \left(\gamma - 1\right) \left(Mx_{2} \gamma + 1\right)}\]</div>
+</div>
+</div>
+<p>Substituting for <span class="math notranslate nohighlight">\(p\)</span> and <span class="math notranslate nohighlight">\(T\)</span>, we get this:</p>
+<p>\begin{equation}
+\rho = \frac{\gamma B\left(C_p + \frac{\gamma-1}{2}M_x^2\right)}
+{K(\gamma - 1)(1 + \gamma M_x^2)}
+\end{equation}</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">usq2</span> <span class="o">=</span> <span class="p">(</span><span class="n">A</span><span class="o">/</span><span class="n">rho2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+<span class="n">usq2</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_latex math notranslate nohighlight">
+\[\displaystyle \frac{A^{2} K^{2} \left(\gamma - 1\right)^{2} \left(Mx_{2} \gamma + 1\right)^{2}}{B^{2} \gamma^{2} \left(Mx_{2} \left(\frac{\gamma}{2} - \frac{1}{2}\right) + c_{p}\right)^{2}}\]</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">usq3</span> <span class="o">=</span> <span class="p">((</span><span class="n">gamma</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">T2</span><span class="o">*</span><span class="n">Mx2</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">usq3</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_latex math notranslate nohighlight">
+\[\displaystyle \frac{K Mx_{2}^{2} \left(\gamma - 1\right)}{Mx_{2} \left(\frac{\gamma}{2} - \frac{1}{2}\right) + c_{p}}\]</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">f1</span> <span class="o">=</span> <span class="n">usq2</span><span class="o">/</span><span class="n">usq3</span>
+<span class="n">f1</span><span class="o">.</span><span class="n">simplify</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_latex math notranslate nohighlight">
+\[\displaystyle \frac{2 A^{2} K \left(\gamma - 1\right) \left(Mx_{2} \gamma + 1\right)^{2}}{B^{2} Mx_{2}^{2} \gamma^{2} \left(Mx_{2} \left(\gamma - 1\right) + 2 c_{p}\right)}\]</div>
+</div>
+</div>
+<p>Introduce a new term:</p>
+<p>\begin{equation}
+\alpha = \frac{2A^2K(\gamma-1)}{B^2\gamma^2}
+\end{equation}</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">alpha</span> <span class="o">=</span> <span class="n">var</span><span class="p">(</span><span class="s1">&#39;alpha&#39;</span><span class="p">)</span>
+<span class="n">f2</span> <span class="o">=</span> <span class="n">f1</span><span class="o">*</span><span class="p">(</span><span class="n">B</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">gamma</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">alpha</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">A</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">K</span><span class="o">*</span><span class="p">(</span><span class="n">gamma</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+<span class="n">f2</span><span class="o">.</span><span class="n">simplify</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_latex math notranslate nohighlight">
+\[\displaystyle \frac{\alpha \left(Mx_{2} \gamma + 1\right)^{2}}{Mx_{2}^{2} \left(Mx_{2} \left(\gamma - 1\right) + 2 c_{p}\right)}\]</div>
+</div>
+</div>
+<p>This expression is equal to one, so we can write:</p>
+<p>\begin{equation}
+\alpha(M_x^2\gamma + 1)^2 = M_x^2(M_x^2(\gamma - 1) + 2c_p)
+\end{equation}</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">f3</span> <span class="o">=</span> <span class="n">f2</span> <span class="o">-</span> <span class="mi">1</span>
+<span class="n">f3</span><span class="o">.</span><span class="n">simplify</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_latex math notranslate nohighlight">
+\[\displaystyle \frac{- Mx_{2}^{2} \left(Mx_{2} \left(\gamma - 1\right) + 2 c_{p}\right) + \alpha \left(Mx_{2} \gamma + 1\right)^{2}}{Mx_{2}^{2} \left(Mx_{2} \left(\gamma - 1\right) + 2 c_{p}\right)}\]</div>
+</div>
+</div>
+<p>since this expression is equal to zero, we can reduce it:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">eq11</span> <span class="o">=</span> <span class="n">f3</span><span class="o">*</span><span class="p">(</span><span class="n">Mx2</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">Mx2</span><span class="o">*</span><span class="p">(</span><span class="n">gamma</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">c_p</span><span class="p">))</span>
+<span class="n">eq12</span> <span class="o">=</span> <span class="n">eq11</span><span class="o">.</span><span class="n">expand</span><span class="p">()</span>
+<span class="n">eq12</span><span class="o">.</span><span class="n">simplify</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_latex math notranslate nohighlight">
+\[\displaystyle - Mx_{2}^{3} \gamma + Mx_{2}^{3} + Mx_{2}^{2} \alpha \gamma^{2} - 2 Mx_{2}^{2} c_{p} + 2 Mx_{2} \alpha \gamma + \alpha\]</div>
+</div>
+</div>
+<p>Here is that equation in “normal” form:</p>
+<p>\begin{equation}
+{M_x^2}^3\left(1-\gamma\right) +
+{M_x^2}^2\left(\alpha\gamma^2-2c_p\right) +
+{M_x^2}\left(2\alpha\gamma\right) +
+\left(\alpha\right) = 0
+\end{equation}</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">aa</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">gamma</span><span class="p">)</span>
+<span class="n">aa</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_latex math notranslate nohighlight">
+\[\displaystyle 1 - \gamma\]</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">bb</span> <span class="o">=</span> <span class="n">alpha</span><span class="o">*</span><span class="n">gamma</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">c_p</span><span class="p">)</span>
+<span class="n">bb</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_latex math notranslate nohighlight">
+\[\displaystyle \alpha \gamma^{2} - 2 c_{p}\]</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cc</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">alpha</span><span class="o">*</span><span class="n">gamma</span>
+<span class="n">cc</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_latex math notranslate nohighlight">
+\[\displaystyle 2 \alpha \gamma\]</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dd</span> <span class="o">=</span> <span class="n">alpha</span>
+<span class="n">dd</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_latex math notranslate nohighlight">
+\[\displaystyle \alpha\]</div>
+</div>
+</div>
+<p>This is a simple polynomial in <span class="math notranslate nohighlight">\(M^2_x\)</span>. Let’s see what <em>SymPy</em> can do with such an equation.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">var</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="n">poly</span> <span class="o">=</span> <span class="n">aa</span><span class="o">*</span><span class="n">x</span><span class="o">**</span><span class="mi">3</span> <span class="o">+</span> <span class="n">bb</span><span class="o">*</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">cc</span><span class="o">*</span><span class="n">x</span> <span class="o">+</span> <span class="n">dd</span>
+<span class="n">poly</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_latex math notranslate nohighlight">
+\[\displaystyle 2 \alpha \gamma x + \alpha + x^{3} \cdot \left(1 - \gamma\right) + x^{2} \left(\alpha \gamma^{2} - 2 c_{p}\right)\]</div>
+</div>
+</div>
+<p>only one of these results has a real value:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">M</span> <span class="o">=</span> <span class="n">solve</span><span class="p">([</span><span class="n">poly</span><span class="p">],[</span><span class="n">x</span><span class="p">])</span>
+<span class="n">M</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>\begin{equation}
+{M_x^2}^2(\gamma B) + M_x^2(\gamma A) + A = 0
+\end{equation}</p>
+</section>
+</section>
+<section id="unverified-code-below">
+<h2>unverified code below ===============================================<a class="headerlink" href="#unverified-code-below" title="Permalink to this headline">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">phi</span> <span class="o">=</span> <span class="n">var</span><span class="p">(</span><span class="s1">&#39;phi&#39;</span><span class="p">)</span>
+<span class="n">Ksub</span> <span class="o">=</span> <span class="n">gamma</span><span class="o">*</span><span class="n">B</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">gamma</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">A</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">K</span><span class="p">)</span>
+<span class="n">Ksub</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">test</span> <span class="o">=</span> <span class="n">T_c</span><span class="o">.</span><span class="n">subs</span><span class="p">(</span><span class="n">K</span><span class="p">,</span><span class="n">Ksub</span><span class="p">)</span>
+<span class="n">test</span><span class="o">.</span><span class="n">simplify</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="definition-of-mach-number">
+<h2>Definition of Mach Number<a class="headerlink" href="#definition-of-mach-number" title="Permalink to this headline">#</a></h2>
+<p>We will focus only on the axial Mach Number <span class="math notranslate nohighlight">\(M_x\)</span>:</p>
+<p>\begin{equation}
+M_x = \frac{u}{a}
+\end{equation}</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">a</span><span class="p">,</span> <span class="n">M_x</span> <span class="o">=</span> <span class="n">var</span><span class="p">(</span><span class="s1">&#39;a M_x&#39;</span><span class="p">)</span>
+<span class="n">Eq5</span> <span class="o">=</span> <span class="n">M_x</span> <span class="o">*</span> <span class="n">a</span> <span class="o">-</span> <span class="n">u</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="speed-of-sound">
+<h2>Speed of Sound<a class="headerlink" href="#speed-of-sound" title="Permalink to this headline">#</a></h2>
+<p>\begin{equation}
+a = \sqrt{\gamma R T}
+\end{equation}</p>
+<p>This result in <span class="math notranslate nohighlight">\(u\)</span>:</p>
+<p>\begin{equation}
+u =  M_x \sqrt{\gamma RT}
+\end{equation}</p>
+<p>With this equation, we can evaluate <span class="math notranslate nohighlight">\(\rho u^2\)</span>:</p>
+<p>\begin{equation}
+\rho u^2 = M_x^2(\gamma \rho R T)
+\end{equation}</p>
+<p>Substituting the state equation, we can get this result:</p>
+<p>\begin{equation}
+B = p(1 + M_x^2\gamma)
+\end{equation}</p>
+<p>or</p>
+<p>\begin{equation}
+p = \frac{B}{1+ M_x^2\gamma}
+\end{equation}</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">eq6</span> <span class="o">=</span> <span class="n">B</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">gamma</span><span class="o">*</span><span class="n">M_x</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="n">p</span>
+<span class="n">eq6</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>From the definition of the total enthalpy we can get this:</p>
+<p>\begin{equation}
+c_p T = H - \frac{1}{2}(u^2 + v^2 + w^2)
+\end{equation}</p>
+<p>Let K be defined as follows:</p>
+<p>\begin{equation}
+K = H - \frac{1}{2}(v^2 + w^2)
+\end{equation}</p>
+<p>Now we have this equation:</p>
+<p>\begin{equation}
+\frac{\gamma}{\gamma - 1}R T = K -\frac{1}{2}M_X^2\gamma R T
+\end{equation}</p>
+<p>Rearranging:</p>
+<p>\begin{equation}
+K = \left(\frac{1}{\gamma - 1} +\frac{1}{2}M_x^2\right)\gamma R T
+\end{equation}</p>
+<p>\begin{equation}
+K = \left(\frac{\gamma}{\gamma - 1} + \frac{\gamma M_x^2}{2}\right) R T
+\end{equation}</p>
+<p>\begin{equation}</p>
+<p>\end{equation}</p>
+<p>For isentropic flow of a perfect gas we have:</p>
+<p>\begin{equation}
+\frac{p}{\rho^\gamma} = constant
+\end{equation}</p>
+<p>\begin{align}
+A &amp;= \rho u\
+B &amp;= \rho u^2 + p \
+\end{align}</p>
+<p>Therefore:</p>
+<p>\begin{equation}
+\frac{A^2K}{B^2} =  \frac{K\rho^2 u^2}{\rho^2 u^4 + 2 \rho u^2 p + p^2}
+\end{equation}</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">A</span> <span class="o">=</span> <span class="n">rho</span> <span class="o">*</span> <span class="n">u</span>
+<span class="n">B</span> <span class="o">=</span> <span class="n">rho</span> <span class="o">*</span> <span class="n">u</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">p</span>
+<span class="n">K</span><span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="n">gamma</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">+</span><span class="n">M_x</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="n">gamma</span><span class="o">*</span><span class="n">Rgas</span><span class="o">*</span><span class="n">T</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">B</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">gamma</span><span class="o">*</span><span class="n">M_x</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">phi</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">gamma</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">A</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">K</span><span class="o">/</span><span class="p">(</span><span class="n">gamma</span><span class="o">*</span><span class="n">B</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">phi</span><span class="o">.</span><span class="n">simplify</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            kernelName: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+              </div>
+              
+            </main>
+            <footer class="footer-article noprint">
+                
+    <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+    <a class='left-prev' id="prev-link" href="governing-equations.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">Governing Equations</p>
+        </div>
+    </a>
+</div>
+            </footer>
+        </div>
+    </div>
+    <div class="footer-content row">
+        <footer class="col footer"><p>
+  
+    By Roie R. Black<br/>
+  
+      &copy; Copyright 2022.<br/>
+</p>
+        </footer>
+    </div>
+    
+</div>
+
+
+      </div>
+    </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+
+
+  </body>
+</html>

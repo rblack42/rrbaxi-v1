@@ -4,11 +4,9 @@
 format: jb-book
 root: intro
 chapters:
-- file: fluid-properties
-- file: nondimensionalization
-- file: ideal gas properties
-- file: maccormacks-method
-- file: axisymmetric-pns
-- file: markdown
-- file: notebooks
-- file: markdown-notebooks
+  - file: basic-concepts
+  - file: fluid-propertie
+  - file: ideal-gas-properties
+  - file: governing-equations
+  - file: axisymmetric=parabolized-equations
+  - file: solver

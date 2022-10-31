@@ -1,7 +1,7 @@
 # Book settings
 # Learn more at https://jupyterbook.org/customize/config.html
 
-title: RRBAXI: Parabolized Navier-Stokes Solver
+title: "RRBAXI: Parabolized Navier-Stokes Solver"
 author: Roie R. Black
 logo: logo.png
 

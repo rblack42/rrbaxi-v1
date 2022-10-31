@@ -1,0 +1,873 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>The Navier-Stokes Equations in Cylinderical Coordinates &#8212; RRBAXI: Parabolized Navier-Stokes Solver</title>
+    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" href="_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+<!-- Checkboxes to toggle the left sidebar -->
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle navigation sidebar">
+<label class="overlay overlay-navbar" for="__navigation">
+    <div class="visually-hidden">Toggle navigation sidebar</div>
+</label>
+<!-- Checkboxes to toggle the in-page toc -->
+<input type="checkbox" class="sidebar-toggle" name="__page-toc" id="__page-toc" aria-label="Toggle in-page Table of Contents">
+<label class="overlay overlay-pagetoc" for="__page-toc">
+    <div class="visually-hidden">Toggle in-page Table of Contents</div>
+</label>
+<!-- Headers at the top -->
+<div class="announcement header-item noprint"></div>
+<div class="header header-item noprint"></div>
+
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<!-- Sidebar -->
+<div class="bd-sidebar noprint" id="site-navigation">
+    <div class="bd-sidebar__content">
+        <div class="bd-sidebar__top"><div class="navbar-brand-box">
+    <a class="navbar-brand text-wrap" href="index.html">
+      
+        <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
+        
+      
+      
+      <img src="_static/logo.png" class="logo" alt="logo">
+      
+      
+      <h1 class="site-logo" id="site-title">RRBAXI: Parabolized Navier-Stokes Solver</h1>
+      
+    </a>
+</div><form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="intro.html">
+                    RRBAXI
+                </a>
+            </li>
+        </ul>
+        <ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="fluid-properties.html">
+   Fluid Properties
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="nondimensionalization.html">
+   Nondimensionalization
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="maccormacks-method.html">
+   MacCormack’s Method
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="axisymmetric-pns.html">
+   Axisymmetric PNS for Ogive-Cylinder
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="markdown.html">
+   Markdown Files
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="notebooks.html">
+   Content with notebooks
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="markdown-notebooks.html">
+   Notebooks with MyST Markdown
+  </a>
+ </li>
+</ul>
+
+    </div>
+</nav></div>
+        <div class="bd-sidebar__bottom">
+             <!-- To handle the deprecated key -->
+            
+            <div class="navbar_extra_footer">
+            Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
+            </div>
+            
+        </div>
+    </div>
+    <div id="rtd-footer-container"></div>
+</div>
+
+
+          
+
+
+          
+<!-- A tiny helper pixel to detect if we've scrolled -->
+<div class="sbt-scroll-pixel-helper"></div>
+<!-- Main content -->
+<div class="col py-0 content-container">
+    
+    <div class="header-article row sticky-top noprint">
+        
+
+
+
+<div class="col py-1 d-flex header-article-main">
+    <div class="header-article__left">
+        
+        <label for="__navigation"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="right"
+title="Toggle navigation"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-bars"></i>
+  </span>
+
+</label>
+
+        
+    </div>
+    <div class="header-article__right">
+<div class="menu-dropdown menu-dropdown-launch-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Launch interactive content">
+      <i class="fas fa-rocket"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="https://mybinder.org/v2/gh/executablebooks/jupyter-book/master?urlpath=tree/docs/cylinderical-navier-stokes.ipynb"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Launch on Binder"
+>
+  
+
+<span class="headerbtn__icon-container">
+  
+    <img src="_static/images/logo_binder.svg">
+  </span>
+<span class="headerbtn__text-container">Binder</span>
+</a>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+
+<button onclick="toggleFullScreen()"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="bottom"
+title="Fullscreen mode"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+<div class="menu-dropdown menu-dropdown-repository-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Source repositories">
+      <i class="fab fa-github"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="https://github.com/executablebooks/jupyter-book"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Source repository"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="headerbtn__text-container">repository</span>
+</a>
+
+      </li>
+      
+      <li>
+        <a href="https://github.com/executablebooks/jupyter-book/issues/new?title=Issue%20on%20page%20%2Fcylinderical-navier-stokes.html&body=Your%20issue%20content%20here."
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Open an issue"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="headerbtn__text-container">open issue</span>
+</a>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+
+<div class="menu-dropdown menu-dropdown-download-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Download this page">
+      <i class="fas fa-download"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="_sources/cylinderical-navier-stokes.ipynb"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Download source file"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="headerbtn__text-container">.ipynb</span>
+</a>
+
+      </li>
+      
+      <li>
+        
+<button onclick="printPdf(this)"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="left"
+title="Print to PDF"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="headerbtn__text-container">.pdf</span>
+</button>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+<label for="__page-toc"
+  class="headerbtn headerbtn-page-toc"
+  
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-list"></i>
+  </span>
+
+</label>
+
+    </div>
+</div>
+
+<!-- Table of contents -->
+<div class="col-md-3 bd-toc show noprint">
+    <div class="tocsection onthispage pt-5 pb-3">
+        <i class="fas fa-list"></i> Contents
+    </div>
+    <nav id="bd-toc-nav" aria-label="Page">
+        <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#derivation-of-unit-vector-derivatives">
+   Derivation of Unit Vector Derivatives
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#continuity-equation">
+   Continuity Equation
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#x-momentum-equation">
+   X Momentum Equation
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#r-momentum-equation">
+   r Momentum Equation
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#phi-momentum-e">
+   <span class="math notranslate nohighlight">
+    \(\phi\)
+   </span>
+   Momentum E
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#energy-equation">
+   Energy Equation
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#state-equation">
+   State Equation
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#vector-form">
+   Vector Form
+  </a>
+ </li>
+</ul>
+
+    </nav>
+</div>
+    </div>
+    <div class="article row">
+        <div class="col pl-md-3 pl-lg-5 content-container">
+            <!-- Table of contents that is only displayed when printing the page -->
+            <div id="jb-print-docs-body" class="onlyprint">
+                <h1>The Navier-Stokes Equations in Cylinderical Coordinates</h1>
+                <!-- Table of contents -->
+                <div id="print-main-content">
+                    <div id="jb-print-toc">
+                        
+                        <div>
+                            <h2> Contents </h2>
+                        </div>
+                        <nav aria-label="Page">
+                            <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#derivation-of-unit-vector-derivatives">
+   Derivation of Unit Vector Derivatives
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#continuity-equation">
+   Continuity Equation
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#x-momentum-equation">
+   X Momentum Equation
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#r-momentum-equation">
+   r Momentum Equation
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#phi-momentum-e">
+   <span class="math notranslate nohighlight">
+    \(\phi\)
+   </span>
+   Momentum E
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#energy-equation">
+   Energy Equation
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#state-equation">
+   State Equation
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#vector-form">
+   Vector Form
+  </a>
+ </li>
+</ul>
+
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            <main id="main-content" role="main">
+                
+              <div>
+                
+  <section class="tex2jax_ignore mathjax_ignore" id="the-navier-stokes-equations-in-cylinderical-coordinates">
+<h1>The Navier-Stokes Equations in Cylinderical Coordinates<a class="headerlink" href="#the-navier-stokes-equations-in-cylinderical-coordinates" title="Permalink to this headline">#</a></h1>
+<p>Define a cylindrical coordinate system <span class="math notranslate nohighlight">\((x,r,\phi)\)</span>. In this system, a velocity vector is defined as:</p>
+<p>\begin{equation}
+\overrightarrow{V} =
+u\hat{e}_x + v\hat{e}<em>r + w\hat{e}</em>\phi
+\end{equation}</p>
+<p>where <span class="math notranslate nohighlight">\(\hat{e}_x\)</span>, <span class="math notranslate nohighlight">\(\hat{e}_r\)</span>, and <span class="math notranslate nohighlight">\(\hat{e}_\phi\)</span> are unit vectors.</p>
+<p>The <em>del</em> operator <span class="math notranslate nohighlight">\(\overrightarrow{\nabla}\)</span> is given by:</p>
+<p>\begin{equation}
+\overrightarrow{\nabla} =
+\hat{e}_x\frac{\partial}{\partial x} +
+\hat{e}<em>r\frac{\partial}{\partial r} +
+\frac{\hat{e}</em>\phi}{r}\frac{\partial}{\partial \phi}
+\end{equation}</p>
+<section id="derivation-of-unit-vector-derivatives">
+<h2>Derivation of Unit Vector Derivatives<a class="headerlink" href="#derivation-of-unit-vector-derivatives" title="Permalink to this headline">#</a></h2>
+<p>A position vector <span class="math notranslate nohighlight">\(\overrightarrow{r}\)</span> in cartesian coordinates is given by</p>
+<p>\begin{equation}
+\overrightarrow{r} = x\hat{i} + y\hat{j} + z\hat{k}
+\end{equation}</p>
+<p>The transformation from cartesian to cylindrical coordinates is given by:</p>
+<p>\begin{align}
+x &amp;= x \
+y &amp;= r\cos\phi \
+z &amp;= r\sin\phi
+\end{align}</p>
+<p>Which gives this:</p>
+<p>\begin{equation}
+\overrightarrow{r} = x\hat{i} + r\cos\phi\hat{j} + r\sin\phi\hat{k}
+\end{equation}</p>
+<p>We can now form the derivatives, noting that <span class="math notranslate nohighlight">\(r\)</span> is not dependent on either <span class="math notranslate nohighlight">\(x\)</span> or <span class="math notranslate nohighlight">\(\phi\)</span>:</p>
+<p>\begin{equation}
+\hat{e}_x = \frac{\partial \overrightarrow{r}}{\partial x} = \hat{i}
+\end{equation}</p>
+<p>\begin{equation}
+\hat{e}_r = \frac{\partial \overrightarrow{r}}{\partial r} =
+\cos\phi\hat{j} + \sin\phi\hat{k}
+\end{equation}</p>
+<p>\begin{equation}
+\hat{e}_\phi = \frac{\partial \overrightarrow{r}}{\partial \phi} =
+-\sin\phi\hat{j} + \cos\phi\hat{k}
+\end{equation}</p>
+<p>From these equations, the derivatives of the unit vectors become:</p>
+<p>\begin{equation}
+\frac{\partial\hat{e}_x}{\partial x} = \frac{\partial\hat{e}_x}{\partial r} = \frac{\partial\hat{e}_x}{\partial\phi} = 0
+\end{equation}</p>
+<p>\begin{equation}
+\frac{\partial\hat{e}_r}{\partial x} = 0
+\end{equation}</p>
+<p>\begin{equation}
+\frac{\partial\hat{e}<em>r}{\partial \phi} = - \sin\phi\hat{j} + \cos\phi\hat{k} = \hat{e}</em>\phi
+\end{equation}</p>
+<p>\begin{equation}
+\frac{\partial \hat{e}<em>\phi}{\partial x} =
+\frac{\partial \hat{e}</em>\phi}{\partial r} = 0
+\end{equation}</p>
+<p>\begin{equation}
+\frac{\partial\hat{e}_\phi}{\partial\phi} =
+-\cos\phi\hat{j} - sin\phi\hat{k} = -\hat{e}_r
+\end{equation}</p>
+<p>We can ow write the derivatives of a general vector function <span class="math notranslate nohighlight">\(\overrightarrow{F}\)</span> as follows:</p>
+<p>\begin{equation}
+\overrightarrow{F} = F_1\hat{e}_x + F_2\hat{e}<em>r + F_3\hat{e}</em>\phi
+\end{equation}</p>
+<p>\begin{equation}
+\frac{\partial\overrightarrow F}{\partial x} =
+\frac{\partial F_1}{\partial x}\hat{e}_x +
+\frac{\partial F_2}{\partial x}\hat{e}<em>r +
+\frac{\partial F_3}{\partial x}\hat{e}</em>\phi
+\end{equation}</p>
+<p>\begin{equation}
+\frac{\partial\overrightarrow F}{\partial r} =
+\frac{\partial F_1}{\partial r}\hat{e}_x +
+\frac{\partial F_2}{\partial r}\hat{e}<em>r +
+\frac{\partial F_3}{\partial r}\hat{e}</em>\phi
+\end{equation}</p>
+<p>\begin{equation}
+\frac{\partial\overrightarrow F}{\partial \phi} =
+\frac{\partial F_1}{\partial \phi}\hat{e}_x +
+\left(\frac{\partial F_2}{\partial \phi} - F_3\right)\hat{e}<em>r +
+\left(\frac{\partial F_3}{\partial \phi} - F_2\right)\hat{e}</em>\phi
+\end{equation}</p>
+<p>Using these equations we can come up with our governing equations:</p>
+</section>
+<section id="continuity-equation">
+<h2>Continuity Equation<a class="headerlink" href="#continuity-equation" title="Permalink to this headline">#</a></h2>
+<p>\begin{equation}
+\frac{\partial\rho}{\partial t} +
+\frac{\partial\rho u}{\partial x} +
+\frac{1}{r}\frac{\partial \rho v r}{\partial r} +
+\frac{1}{r}\frac{\partial\rho w}{\partial\phi} = 0
+\end{equation}</p>
+<p>In writing the rest of the equations, we use the continuity equation to create the <em>conservative</em> form of the final equations.</p>
+</section>
+<section id="x-momentum-equation">
+<h2>X Momentum Equation<a class="headerlink" href="#x-momentum-equation" title="Permalink to this headline">#</a></h2>
+<p>\begin{equation}
+\frac{\partial \rho u}{\partial t} +
+\frac{\partial \rho u^2}{\partial x} +
+\frac{\partial \rho uv}{\partial r} +
+\frac{\rho w}{r}\frac{\partial u}{\partial\phi} =
+-\frac{\partial p}{\partial x} +
+\frac{1}{Re}\left{
+\frac{\partial\sigma_{xx}}{\partial x} +
+\frac{\partial\tau_{xr}}{\partial r} +
+\right}
+\end{equation}</p>
+</section>
+<section id="r-momentum-equation">
+<h2>r Momentum Equation<a class="headerlink" href="#r-momentum-equation" title="Permalink to this headline">#</a></h2>
+<p>\begin{equation}
+\rho\frac{\partial v}{\partial t} +
+\rho u\frac{\partial v}{\partial x} +
+\rho v\frac{\partial v}{\partial r} +
+\frac{\rho w}{r}\left(
+\frac{\partial v}{\partial\phi} - w
+\right) =
+-\frac{1}{r}\frac{\partial p}{\partial r} +
+\frac{1}{Re}\left{
+\frac{\partial\tau_{xr}}{\partial x} +
+\frac{\partial\sigma_{rr}}{\partial r} +
+\frac{1}{r}\left(\frac{\partial\tau_{r\phi}}{\partial \phi} - \sigma_{\phi\phi} + \sigma_{rr}\right)
+\right}
+\end{equation}</p>
+</section>
+<section id="phi-momentum-e">
+<h2><span class="math notranslate nohighlight">\(\phi\)</span> Momentum E<a class="headerlink" href="#phi-momentum-e" title="Permalink to this headline">#</a></h2>
+<p>quation</p>
+<p>\begin{equation}
+\rho\frac{\partial w}{\partial t} +
+\rho u\frac{\partial w}{\partial x} +
+\rho v\frac{\partial w}{\partial r} +
+\frac{\rho w}{r}
+\left(
+\frac{\partial w}{\partial\phi} + v
+\right) =
+-\frac{1}{r}\frac{\partial p}{\partial \phi} +
+\frac{1}{Re}\left{
+\frac{\partial\tau_{x\phi}}{\partial x} +
+\frac{\partial\tau_{r\phi}}{\partial r} +
+\frac{1}{r}\left(\frac{\partial\sigma_{\phi\phi}}{\partial \phi} + 2\tau_{r\phi}\right)
+\right} =
+\end{equation}</p>
+</section>
+<section id="energy-equation">
+<h2>Energy Equation<a class="headerlink" href="#energy-equation" title="Permalink to this headline">#</a></h2>
+<p>\begin{equation}
+\rho\frac{\partial}{\partial t}
+\left(H - \frac{p}{\rho}\right) +
+\rho u\frac{\partial}{\partial x}
+\left(H - \frac{p}{\rho}\right) +
+\rho v\frac{\partial}{\partial r}
+\left(H - \frac{p}{\rho}\right) +
+\frac{\rho w}{r}\frac{\partial}{\partial \phi}
+\left(H - \frac{p}{\rho}\right) =
+\frac{1}{PrRe}
+\left{
+\frac{\partial}{\partial x}
+\left(
+\mu \frac{\partial T}{\partial x}
+\right) +
+\frac{1}{r}\frac{\partial}{\partial r}
+\frac{\partial}{\partial x}
+\left(
+\mu\frac{\partial T}{\partial r}
+\right) +
+\frac{1}{r^2}\frac{\partial}{\partial \phi}
+\left(
+\mu\frac{\partial T}{\partial \phi}
+\right)
+\right} -
+\frac{\partial}{\partial x}(up) -
+\frac{1}{r}\frac{\partial rvp}{\partial r} -
+\frac{1}{r}\frac{\partial wp}{\partial\phi} +
+\frac{1}{Re}
+\left{
+\frac{\partial}{\partial x}\left(
+u\sigma_{xx} + v\tau_{xr} + w\tau_{x\phi}
+\right) +
+\frac{1}{r}
+\frac{\partial}{\partial r}\left(
+ru\tau_{xr} + rv\sigma_{rr} + rw\tau_{r\phi}
+\right) +
+\frac{1}{r}
+\frac{\partial}{\partial \phi}\left(
+u\tau_{x\phi} + v\tau_{r\phi} + w\sigma_{\phi\phi}
+\right)
+\right}
+\end{equation}</p>
+</section>
+<section id="state-equation">
+<h2>State Equation<a class="headerlink" href="#state-equation" title="Permalink to this headline">#</a></h2>
+<p>\begin{equation}
+p = \frac{\gamma - 1}{\gamma}\rho t
+\end{equation}</p>
+</section>
+<section id="vector-form">
+<h2>Vector Form<a class="headerlink" href="#vector-form" title="Permalink to this headline">#</a></h2>
+<p>\begin{equation}
+{\bf E}_x + {\bf F}<em>r + {\bf G}</em>\phi = {\bf R}
+\end{equation}</p>
+<p>where:</p>
+<p>\begin{equation}
+\frac{\partial{(\bf E_I - E_V})}{\partial x} +
+\frac{\partial{(\bf F_I - F_V})}{\partial r} +
+\frac{1}{r}\frac{\partial{(\bf G_I - G_V})}{\partial y} + \frac{1}{r}R
+= 0
+\end{equation}</p>
+<p>\begin{equation}
+{\bf E_I} =
+\begin{bmatrix}
+\rho u r\
+r \left(\rho u^2 + p\right) \
+\rho u v r \
+\rho u w r \
+\rho u H r
+\end{bmatrix}
+\end{equation}</p>
+<p>\begin{equation}
+{\bf E_V} =
+\begin{bmatrix}
+0 \
+\sigma_{xx} \
+\tau_{xr} \
+\tau_{\theta z} \
+u\sigma_{xx} + v\tau_{xr} + w\tau_{\theta x} + - q_x
+\end{bmatrix}
+\end{equation}</p>
+<p>\begin{equation}
+{\bf F_I} =
+\begin{bmatrix}
+\rho v \
+\rho u v \
+\rho v^2 + p \
+\rho v w \
+\rho v H
+\end{bmatrix}
+\end{equation}</p>
+<p>\begin{equation}
+{\bf F_V} =
+\begin{bmatrix}
+0 \
+\tau_{xr} \
+\sigma_{rr} \
+\tau_{\theta r} \
+u\tau_{xr} + v\sigma_{rr} + w\tau_{\theta r} - q_r
+\end{bmatrix}
+\end{equation}</p>
+<p>\begin{equation}
+{\bf G_I} =
+\begin{bmatrix}
+\rho w \
+\rho u w \
+\rho v w \
+\rho w^2 + p \
+\rho w H
+\end{bmatrix}
+\end{equation}</p>
+<p>\begin{equation}
+{\bf G_V} =
+\begin{bmatrix}
+0 \
+\tau_{x\theta} \
+\tau_{r\theta} \
+\sigma_{\theta\theta} \
+u\tau_{x\theta} + v\tau_{r\theta} + w\sigma_{\theta\theta} - q_z
+\end{bmatrix}
+\end{equation}</p>
+<p>\begin{equation}
+{\bf R} =
+\begin{bmatrix}
+\rho v \
+\rho u v - \tau_{xr} \
+\rho w^2 - \sigma_{rr} - \sigma_{\theta\theta} \
+2\rho v w - 2 \tau_{r\theta} \
+\rho v H + q_r - u\tau_{xr} -v\sigma_{rr} - w\tau_{r\theta}
+\end{bmatrix}
+\end{equation}</p>
+<p>\begin{equation}
+E_t =
+\frac{T}{\gamma(\gamma - 1)M^2} +
+\frac{1}{2}( u^2 + v^2 + w^2)
+\end{equation}</p>
+<p>\begin{equation}
+H = E + \frac{p}{\rho}
+\end{equation}</p>
+<p>\begin{equation}
+\sigma_{xx} =
+\frac{2\mu}{3Re} \left[
+2\frac{\partial u}{\partial x} -
+\frac{\partial v}{\partial r} -
+\frac{1}{r}(
+\frac{\partial w}{\partial \theta} + v
+\right)
+\end{equation}</p>
+<p>\begin{equation}
+\sigma_{yy} =
+\frac{2\mu}{3Re_L} \left(
+2\frac{\partial v}{\partial x} -
+\frac{\partial u}{\partial y} -
+\frac{\partial w}{\partial z}
+\right)
+\end{equation}</p>
+<p>\begin{equation}
+\sigma_{zz} =
+\frac{2\mu}{3Re_L} \left(
+2\frac{\partial w}{\partial z} -
+\frac{\partial u}{\partial x} -
+\frac{\partial v}{\partial y}
+\right)
+\end{equation}</p>
+<p>\begin{equation}
+\tau_{xy} =
+\frac{\mu}{Re_L} \left(
+\frac{\partial u}{\partial y} +
+\frac{\partial v}{\partial x}
+\right)
+\end{equation}</p>
+<p>\begin{equation}
+\tau_{xz} =
+\frac{\mu}{Re_L} \left(
+\frac{\partial u}{\partial z} +
+\frac{\partial w}{\partial x}
+\right)
+\end{equation}</p>
+<p>\begin{equation}
+\tau_{yz} =
+\frac{\mu}{Re_L} \left(
+\frac{\partial v}{\partial z} +
+\frac{\partial w}{\partial y}
+\right)
+\end{equation}</p>
+<p>\begin{equation}
+q_x = \frac{\mu}{(\gamma-1)M_\infty Re_L Pr}
+\frac{\partial T}{\partial x}
+\end{equation}</p>
+<p>\begin{equation}
+q_y = \frac{\mu}{(\gamma-1)M_\infty Re_L Pr}
+\frac{\partial T}{\partial y}
+\end{equation}</p>
+<p>\begin{equation}
+q_z = \frac{\mu}{(\gamma-1)M_\infty Re_L Pr}
+\frac{\partial T}{\partial z}
+\end{equation}</p>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            kernelName: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+              </div>
+              
+            </main>
+            <footer class="footer-article noprint">
+                
+    <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+</div>
+            </footer>
+        </div>
+    </div>
+    <div class="footer-content row">
+        <footer class="col footer"><p>
+  
+    By Roie R. Black<br/>
+  
+      &copy; Copyright 2022.<br/>
+</p>
+        </footer>
+    </div>
+    
+</div>
+
+
+      </div>
+    </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+
+
+  </body>
+</html>
